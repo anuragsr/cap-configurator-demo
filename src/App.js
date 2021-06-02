@@ -43,7 +43,7 @@ const CameraControls = () => {
 
   // Ref to the controls, so that we can update them on every frame using useFrame
   const controls = useRef()
-  useFrame(() => { controls.current.update()})
+  useFrame(() => { controls.current && controls.current.update()})
 
   // If we need to set parameters for controls
   // controls.current && setControlParams()
@@ -58,7 +58,7 @@ const CameraControls = () => {
   const [active, setActive] = useState(false)
   // Rotate mesh every frame, this is outside of React without overhead
   useFrame(() => {
-    mesh.current.rotation.x = mesh.current.rotation.y += 0.01
+    if(mesh.current) mesh.current.rotation.x = mesh.current.rotation.y += 0.01
   })
   return (
     <mesh
@@ -69,7 +69,7 @@ const CameraControls = () => {
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}>
       <boxBufferGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+      <meshStandardMaterial color={hovered ? 'green' : 'orange'} />
     </mesh>
   )
 }
@@ -86,29 +86,32 @@ const CameraControls = () => {
 }
 
 export default function App() {
-  const [guiData, setGuiData] = useState({ activeObject: "None", showHelpers: true })
+  const env = process.env.REACT_APP_ENV_TYPE
+  , [guiData, setGuiData] = useState({ activeObject: "None", showHelpers: !true })
+
   return (<>
+    {env === "dev" && <>
       <DatGui data={guiData} onUpdate={setGuiData}>
         <DatBoolean path='showHelpers' label='Show Helpers' />
         <DatString path='activeObject' label='Active Object' />
       </DatGui>
       {guiData.showHelpers && <FPSStats bottom={50} left={30} top={"unset"}/>}
-      <Canvas>
-        <ambientLight intensity={0.5} />
-        <PointLightWithHelper 
-          visible={guiData.showHelpers} 
-          color={0xffffff} 
-          intensity={1}
-          position={[70, 50, 5]}/>
-        {guiData.showHelpers && <>
-          <gridHelper args={[1000, 100]}/>
-          <axesHelper args={[500]} /> 
-        </>}
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        <CameraControls />
-        <Box position={[0, 0, 0]} />
-      </Canvas>
-    </>
-  )
+    </>}
+    <Canvas>
+      <ambientLight intensity={0.5} />
+      <PointLightWithHelper
+        visible={guiData.showHelpers}
+        color={0xffffff}
+        intensity={1}
+        position={[70, 50, 5]}/>
+      {guiData.showHelpers && <>
+        <gridHelper args={[1000, 100]}/>
+        <axesHelper args={[500]} />
+      </>}
+      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+      <pointLight position={[-10, -10, -10]} />
+      <CameraControls />
+      <Box position={[0, 0, 0]} />
+    </Canvas>
+  </>)
 }
