@@ -4,8 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as THREE from 'three'
 
 // Debug
-// import DatGui, { DatBoolean, DatString } from 'react-dat-gui'
-// import 'react-dat-gui/dist/index.css'
+// TODO Add new GUI
 import FPSStats from 'react-fps-stats'
 
 // Make OrbitControls known as <orbitControls />
@@ -91,10 +90,7 @@ export default function App() {
 
   return (<>
     {env === "dev" && <>
-      {/*<DatGui data={guiData} onUpdate={setGuiData}>
-        <DatBoolean path='showHelpers' label='Show Helpers' />
-        <DatString path='activeObject' label='Active Object' />
-      </DatGui>*/}
+      {/* Add new GUI here*/}
       {guiData.showHelpers && <FPSStats bottom={50} left={30} top={"unset"}/>}
     </>}
     <Canvas>
