@@ -4,9 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as THREE from 'three'
 
 // Debug
-// import DatGui, { DatBoolean, DatString } from 'react-dat-gui'
-// import 'react-dat-gui/dist/index.css'
-// import FPSStats from 'react-fps-stats'
+import { useControls } from "leva"
+import { Stats } from "@react-three/drei"
 
 // Make OrbitControls known as <orbitControls />
 extend({ OrbitControls })
@@ -86,26 +85,19 @@ const CameraControls = () => {
 }
 
 export default function App() {
-  const env = process.env.REACT_APP_ENV_TYPE
-  , [guiData, setGuiData] = useState({ activeObject: "None", showHelpers: !true })
+  const { helpers } = useControls({ helpers: true })
 
   return (<>
-    {/*{env === "dev" && <>
-      <DatGui data={guiData} onUpdate={setGuiData}>
-        <DatBoolean path='showHelpers' label='Show Helpers' />
-        <DatString path='activeObject' label='Active Object' />
-      </DatGui>
-      {guiData.showHelpers && <FPSStats bottom={50} left={30} top={"unset"}/>}
-    </>}*/}
     <Canvas>
       <ambientLight intensity={0.5} />
       <PointLightWithHelper
-        visible={guiData.showHelpers}
+        visible={helpers}
         color={0xffffff}
         intensity={1}
         position={[70, 50, 5]}/>
-      {guiData.showHelpers && <>
-        <gridHelper args={[1000, 100]}/>
+      {helpers && <>
+        <Stats showPanel={0} className="stats" />
+        <gridHelper args={[1000, 100]} />
         <axesHelper args={[500]} />
       </>}
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
