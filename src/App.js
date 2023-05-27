@@ -67,7 +67,7 @@ const CameraControls = () => {
       onClick={(e) => setActive(!active)}
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}>
-      <boxBufferGeometry args={[1, 1, 1]} />
+      <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={hovered ? 'green' : 'orange'} />
     </mesh>
   )
@@ -77,7 +77,7 @@ const CameraControls = () => {
   return (
     <pointLight {...lightProps}>
       <mesh visible={visible}>
-        <sphereBufferGeometry/>
+        <sphereGeometry/>
         <meshStandardMaterial color={0x0000ff} />
       </mesh>
     </pointLight>
