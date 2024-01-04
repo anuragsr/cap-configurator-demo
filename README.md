@@ -1,5 +1,5 @@
-## r3f-starter
-This is a boilerplate for a basic react+threejs scene, using react-three-fiber
+## cap-configurator
+Making a cap colors configurator, using react-three-fiber
 
 ![Screenshot](Screenshot.jpg?raw=true)
 ___

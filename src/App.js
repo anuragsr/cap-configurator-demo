@@ -1,11 +1,13 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, Suspense } from 'react'
 import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useGLTF, SoftShadows } from '@react-three/drei'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as THREE from 'three'
 
 // Debug
 import { useControls } from "leva"
 import { Stats } from "@react-three/drei"
+import {MeshBasicMaterial, MeshStandardMaterial} from "three";
 
 // Make OrbitControls known as <orbitControls />
 extend({ OrbitControls })
@@ -83,27 +85,100 @@ const CameraControls = () => {
     </pointLight>
   )
 }
+, Model = (props) => {
+  const { nodes, materials } = useGLTF(model)
+  return (
+    <group {...props} dispose={null}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <group rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow material-color="yellow" geometry={nodes.baseballCap.geometry} material={materials.baseballCap} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="red" geometry={nodes.baseballCap_1.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="blue" geometry={nodes.plastic.geometry} material={materials.plastic} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />*/}
+          <mesh castShadow material-color="orange" geometry={nodes.plastic_1.geometry} material={materials.plastic.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="aquamarine" geometry={nodes.baseballCap_2.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="purple" geometry={nodes.blinn1SG.geometry} material={materials.blinn1SG.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color={0xff0fe7} geometry={nodes.baseballCap_3.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+        </group>
+      </group>
+    </group>
+  )
+}
+, Model2 = (props) => {
+  const { nodes, materials } = useGLTF(model2)
+  return (
+    <group {...props} dispose={null}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <group rotation={[Math.PI / 2, 0, 0]}>
+          <mesh castShadow material-color="green" geometry={nodes.baseballCap.geometry} material={materials.baseballCap} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color={0xff0f00} geometry={nodes.baseballCap_1.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="salmon" geometry={nodes.plastic.geometry} material={materials.plastic} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />*/}
+          <mesh castShadow material-color="orange" geometry={nodes.plastic_1.geometry} material={materials.plastic.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="aquamarine" geometry={nodes.baseballCap_2.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color="purple" geometry={nodes.blinn1SG.geometry} material={materials.blinn1SG.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+          <mesh castShadow material-color={0xff0fe7} geometry={nodes.baseballCap_3.geometry} material={materials.baseballCap.clone()} position={[0.005, -2.9, -11.842]} rotation={[-0.161, 0, 0]} scale={20.118} />
+        </group>
+      </group>
+    </group>
+  )
+},
+Floor = () => {
+  return (
+    <mesh position={[0, -5, 0]} rotation-x={-Math.PI / 2} receiveShadow>
+      <circleGeometry args={[100]} />
+      <meshStandardMaterial />
+    </mesh>
+  )
+}
+
+
+const CAMERA_DEFAULT_POS = [0, 50, 50]
+const model = '/baseball_cap.glb';
+const model2 = '/baseball_cap2.glb';
 
 export default function App() {
   const { helpers } = useControls({ helpers: true })
-
+  useGLTF.preload(model)
+const config = {
+  size: { value: 25, min: 0, max: 100 },
+  focus: { value: 0, min: 0, max: 2 },
+  samples: { value: 10, min: 1, max: 20, step: 1 }
+}
   return (<>
-    <Canvas>
-      <ambientLight intensity={0.5} />
+    <Canvas
+      shadows
+      camera={{ position: CAMERA_DEFAULT_POS }}>
+      {/*<ambientLight intensity={1} />*/}
       <PointLightWithHelper
         visible={helpers}
         color={0xffffff}
-        intensity={1}
-        position={[70, 50, 5]}/>
+        intensity={.75}
+        position={[70, 50, 25]}/>
+      <PointLightWithHelper
+        visible={helpers}
+        color={0xffffff}
+        intensity={.75}
+        position={[-70, 50, -25]}/>
+      <PointLightWithHelper
+        visible={helpers}
+        color={0xffffff}
+        intensity={.75}
+        position={[0, 50, -50]}/>
       {helpers && <>
         <Stats showPanel={0} className="stats" />
         <gridHelper args={[1000, 100]} />
         <axesHelper args={[500]} />
       </>}
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} />
+      {/*<spotLight castShadow={true} position={[10, 10, 10]} angle={0.15} penumbra={1} />*/}
+      <pointLight position={[0, 100, 0]} castShadow={true}/>
       <CameraControls />
-      <Box position={[0, 0, 0]} />
+      {/*<SoftShadows {...config} />*/}
+      {/*<fog attach="fog" args={["white", 0, 40]} />*/}
+      <Suspense fallback={null}>
+        <Model position={[-20, 0, 0]} scale={[.2, .2, .2]}/>
+        <Model2 position={[20, 0, 0]} scale={[.2, .2, .2]}/>
+        <Floor/>
+      </Suspense>
+      {/*<Box position={[0, 0, 0]} />*/}
     </Canvas>
   </>)
 }
