@@ -1,0 +1,7 @@
+Options +ExecCGI
+AddHandler cgi-script .py
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
+

@@ -1,14 +1,15 @@
 import React, {useRef, useState, Suspense, useEffect} from 'react'
 import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
+import { SwatchesPicker } from 'react-color'
 import {useGLTF, SoftShadows, useHelper, PerspectiveCamera, Html} from '@react-three/drei'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as THREE from 'three'
-
+import {l} from "./helpers"
 // Debug
 import { useControls } from "leva"
 import { Stats } from "@react-three/drei"
 import {MeshBasicMaterial, MeshStandardMaterial} from "three";
-import Model2 from "./scss/Model";
+import {Model1, Model2} from "./Model";
 
 // Make OrbitControls known as <orbitControls />
 extend({ OrbitControls })
@@ -108,11 +109,11 @@ Floor = (props) => {
   return (
     <mesh {...props} rotation-x={-Math.PI / 2} receiveShadow>
       <circleGeometry args={[100]} />
-      <meshStandardMaterial />
+      <meshStandardMaterial color={0xB5D0EC}/>
     </mesh>
   )
 },
-MyCamera = ({ makeDefault, animate, label, near = 10, far = 200, position = [0, 10, 5] }) => {
+MyCamera = ({ makeDefault, animate, label, near = 10, far = 500, position = [0, 10, 5] }) => {
   const ref = useRef()
   
   const {
@@ -160,49 +161,49 @@ MyCamera = ({ makeDefault, animate, label, near = 10, far = 200, position = [0, 
       <Html className="label">{label}</Html>
     </PerspectiveCamera>
   )
+},
+Spinner = (props) => {
+  // l(text);
+  return (
+    <div style={{ display: "flex", alignItems:"center"}}>
+      <span className="loader" />
+      <span>&nbsp;{props.text}</span>
+    </div>
+  );
 }
+
 
 const CAMERA_DEFAULT_POS = [0, 50, 50]
 const model = '/baseball_cap.glb';
-const l = console.log.bind(window.console)
+
+// const ColorPicker = ({ color, onChange }) => {
+//   // console.log("colorPicker", color);
+//   return (
+//     <input type="color" value={color} onChange={onChange} />
+//   );
+// }
+let modelLoaded = false
 
 export default function App() {
-  const [color, setColor] = useState(null);
-  const ColorPicker = () => {
-    
-    console.log("colorPicker", color);
-    
-    return (
-      <input type="color" value={color} onChange={
-        e => {
-          setColor(e.target.value)
-          sleep(50).then(() => {
-            drawAll()
-          })
-        }
-        
-      } />
-    );
-  }
+  const [colorCrown, setColorCrown] = useState("white");
+  const [colorBrim, setColorBrim] = useState("hotpink");
+  const [colorTop, setColorTop] = useState("green");
   
   const canvasRef = useRef()
-  const { helpers } = useControls({
-    helpers: true,
-    camera: ["default", "cam A"],
-    // camera: ["default", "cam A"]
-  })
+  const helpers = false
+  // const { helpers } = useControls({
+  //   helpers: false,
+  // })
   useGLTF.preload(model)
-  const config = {
-    size: { value: 25, min: 0, max: 100 },
-    focus: { value: 0, min: 0, max: 2 },
-    samples: { value: 10, min: 1, max: 20, step: 1 }
-  }
+
   
   const [currImg, setCurrImg] = useState(null)
   const [currImg2, setCurrImg2] = useState(null)
   const [currImg3, setCurrImg3] = useState(null)
   const [currImg4, setCurrImg4] = useState(null)
+  const [drawingImages, setDrawingImages] = useState(true)
   const [currCam, setCurrCam] = useState(null)
+  const [message, setMessage] = useState("Loading model..")
   let sleepSetTimeout_ctrl;
   
   function sleep(ms) {
@@ -212,8 +213,7 @@ export default function App() {
   
   const drawImg = function(){
     l("Drawing:", currCam, "Setting image..")
-    let img;
-    img = canvasRef.current.toDataURL("image/png");
+    const img = canvasRef.current.toDataURL("image/png");
     switch(currCam) {
       case "A":
         setCurrImg(img)
@@ -232,15 +232,17 @@ export default function App() {
         
       default:
         setCurrImg4(img)
+        setDrawingImages(false)
         break;
     }
   }
   
-  // useEffect(() => {
-  //   l("Image set")
-  // }, [currImg,currImg2,currImg3,currImg4])
+  useEffect(() => {
+    l("drawingImages", drawingImages)
+  }, [drawingImages])
   
   const drawAll = async () => {
+    setDrawingImages(true)
     setCurrCam("A")
     // await sleep(300)
     // setCurrCam("B")
@@ -261,12 +263,33 @@ export default function App() {
     doDraw()
   }, [currCam])
   
-  const h = window.innerHeight / 2,
-        w = window.innerWidth / 2
+  const h = window.innerHeight / 4,
+        w = window.innerWidth / 4
+  
+  const wasCalled = useRef(false);
+  /*
+  useEffect(() => {
+    if(wasCalled.current) return;
+    wasCalled.current = true;
+    
+    /!* CODE THAT SHOULD RUN ONCE *!/
+    
+  }, []);*/
   
   return (<>
-    <div style={{position: "absolute", left: 200, zIndex: 2}}>
-      <ColorPicker />
+    {/*<div style={{position: "absolute", left: 200, zIndex: 2}}>
+      <SwatchesPicker
+        width={200}
+        height={150}
+        color={ color }
+        onChangeComplete={ (color, event) => {
+          l(color, event)
+          setColor(color.hex)
+          sleep(50).then(() => {
+            drawAll()
+          })
+        }}
+      />
       <button onClick={drawAll}>Draw</button>
     </div>
     
@@ -282,23 +305,136 @@ export default function App() {
         <img src={currImg3} alt="" width={w} height={h}/>
         <img src={currImg4} alt="" width={w} height={h}/>
       </div>
+    </div>*/}
+    <div className="ctn-main">
+      {/*<div className="canvas">
+        <Canvas
+          className="ctn-hidden"
+          gl={{ preserveDrawingBuffer: true }}
+          ref={canvasRef}
+          shadows
+          camera={{ position: [50, 30, 50] }}>
+          <ambientLight intensity={.25} />
+          <PointLightWithHelper
+            visible={helpers}
+            color={0xffffff}
+            intensity={.75}
+            position={[70, 50, 25]}/>
+          <PointLightWithHelper
+            visible={helpers}
+            color={0xffffff}
+            intensity={.75}
+            position={[-70, 50, -25]}/>
+          <pointLight position={[0, 100, 0]} castShadow={true}/>
+          <CameraControls />
+          <Suspense fallback={null}>
+            <Model1
+              onLoad={() => {
+                l("cap 1 loaded")
+              }}
+              colorCrown={colorCrown}
+              colorBrim={colorBrim}
+              colorTop={colorTop} scale={[.2, .2, .2]}/>
+          </Suspense>
+          <Floor position={[0, -10, 0]} />
+        </Canvas>
+      </div>*/}
+      <div className="screenshots">
+        <div className="ctn-parts-outer">
+          <h2>Cap Parts</h2>
+          <div className="ctn-parts">
+            <div>
+              <h4>Crown</h4>
+              <SwatchesPicker
+                width={200}
+                height={100}
+                color={ colorCrown }
+                onChangeComplete={ (color, event) => {
+                  l(color, event)
+                  setColorCrown(color.hex)
+                  sleep(50).then(() => {
+                    drawAll()
+                  })
+                }}
+              />
+            </div>
+            <div>
+              <h4>Brim</h4>
+              <SwatchesPicker
+                width={200}
+                height={100}
+                color={ colorBrim }
+                onChangeComplete={ (color, event) => {
+                  l(color, event)
+                  setColorBrim(color.hex)
+                  sleep(50).then(() => {
+                    drawAll()
+                  })
+                }}
+              />
+            </div>
+            <div>
+              <h4>Top Button</h4>
+              <SwatchesPicker
+                width={200}
+                height={100}
+                color={ colorTop }
+                onChangeComplete={ (color, event) => {
+                  l(color, event)
+                  setColorTop(color.hex)
+                  sleep(50).then(() => {
+                    drawAll()
+                  })
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="views">
+          {drawingImages && <div className="curtain">
+            <Spinner text={message} />
+          </div>}
+          {!drawingImages && <><div className="inner">
+            <div>
+              <h4>Left</h4>
+              <img src={currImg} alt="Left"/>
+            </div>
+            <div>
+              <h4>Right</h4>
+              <img src={currImg2} alt="Right"/>
+            </div>
+          </div>
+            <div style={{height: 50}}></div>
+            <div className="inner">
+            <div>
+            <h4>Back</h4>
+            <img src={currImg3} alt="Back" />
+            </div>
+            <div>
+            <h4>Front</h4>
+            <img src={currImg4} alt="Front" />
+            </div>
+            </div></>}
+        </div>
+      </div>
     </div>
     
     <Canvas
-      // style={{display: 'none'}}
+      className="ctn-hidden"
       gl={{ preserveDrawingBuffer: true }}
       ref={canvasRef}
       shadows
       camera={{ position: CAMERA_DEFAULT_POS }}>
+      <color attach="background" args={["#B5D0EC"]} />
       <ambientLight intensity={.25} />
       <MyCamera
-        label="A"
-        position={[100, 5, 0]}
+        // label="A"
+        position={[120, 20, 0]}
         makeDefault={currCam === "A"}
       />
       <MyCamera
         label="B"
-        position={[-100, 5, 0]}
+        position={[-120, 20, 0]}
         makeDefault={currCam === "B"}
       />
       <MyCamera
@@ -311,27 +447,6 @@ export default function App() {
         position={[0, 50, 100]}
         makeDefault={currCam === "D"}
       />
-      {/*{currCam === "A" ?
-        <MyCamera
-          // animate={(ref, state) => {
-          //   ref.position.x = Math.sin(state.clock.getElapsedTime()) * 5
-          //   ref.position.y = Math.cos(state.clock.getElapsedTime()) * 5
-          // }}
-          label="A"
-          position={[100, 5, 0]}
-          makeDefault
-        />:
-        <MyCamera
-          // animate={(ref, state) => {
-          //   ref.position.x = Math.sin(state.clock.getElapsedTime()) * 5
-          //   ref.position.y = Math.cos(state.clock.getElapsedTime()) * 5
-          // }}
-          label="B"
-          position={[-100, 5, 0]}
-          makeDefault
-        />
-      }*/}
-      {/*<PerspectiveCamera position={[45, 5, 0]} makeDefault/>*/}
       <PointLightWithHelper
         visible={helpers}
         color={0xffffff}
@@ -342,26 +457,41 @@ export default function App() {
         color={0xffffff}
         intensity={.75}
         position={[-70, 50, -25]}/>
-      {/*
-      <PointLightWithHelper
+      
+      {/*<PointLightWithHelper
         visible={helpers}
         color={0xffffff}
-        intensity={.75}
-        position={[0, 50, 0]}/>*/}
+        intensity={.5}
+        position={[0, 100, 0]}/>*/}
       {helpers && <>
         <Stats showPanel={0} className="stats" />
         <gridHelper args={[1000, 100]} />
         <axesHelper args={[500]} />
       </>}
       {/*<spotLight castShadow={true} position={[10, 10, 10]} angle={0.15} penumbra={1} />*/}
-      <pointLight position={[0, 100, 0]} castShadow={true}/>
+      <pointLight position={[0, 100, 25]} castShadow={true}/>
       {/*<directionalLight position={[0, 50, 0]} castShadow={true}/>*/}
       <CameraControls />
       {/*<SoftShadows {...config} />*/}
       {/*<fog attach="fog" args={["white", 0, 40]} />*/}
       <Suspense fallback={null}>
         {/*<Model position={[-20, 0, 0]} scale={[.2, .2, .2]}/>*/}
-        <Model2 hatC={color} rotation={[ .2, 0, 0]} position={[0, 0, 0]} scale={[.2, .2, .2]}/>
+        <Model1
+          onLoad={() => {
+            l("cap 2 loaded")
+            l(modelLoaded)
+            if(!modelLoaded) {
+              setMessage("Generating..")
+              drawAll()
+            }
+            modelLoaded = true
+            // if(wasCalled.current) drawAll()
+          }}
+          colorCrown={colorCrown}
+          colorBrim={colorBrim}
+          colorTop={colorTop}
+          rotation={[ .2, 0, 0]}
+          position={[0, 0, 0]} scale={[.2, .2, .2]}/>
       </Suspense>
       <Floor position={[0, -10, 0]} />
       {/*<Box position={[0, 0, 0]} />*/}
