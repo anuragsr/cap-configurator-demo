@@ -162,12 +162,29 @@ MyCamera = ({ makeDefault, animate, label, near = 10, far = 200, position = [0, 
   )
 }
 
-
 const CAMERA_DEFAULT_POS = [0, 50, 50]
 const model = '/baseball_cap.glb';
 const l = console.log.bind(window.console)
 
 export default function App() {
+  const [color, setColor] = useState(null);
+  const ColorPicker = () => {
+    
+    console.log("colorPicker", color);
+    
+    return (
+      <input type="color" value={color} onChange={
+        e => {
+          setColor(e.target.value)
+          sleep(50).then(() => {
+            drawAll()
+          })
+        }
+        
+      } />
+    );
+  }
+  
   const canvasRef = useRef()
   const { helpers } = useControls({
     helpers: true,
@@ -249,10 +266,11 @@ export default function App() {
   
   return (<>
     <div style={{position: "absolute", left: 200, zIndex: 2}}>
+      <ColorPicker />
       <button onClick={drawAll}>Draw</button>
     </div>
     
-    <div style={{ opacity: .7, display: "flex", flexDirection:"column", position: "absolute", left: 0, top: 0, zIndex: 1,
+    <div style={{ opacity: 1, display: "flex", flexDirection:"column", position: "absolute", left: 0, top: 0, zIndex: 1,
       // background: "rgba(0, 0, 0, .4)",
       background: "white",
       pointerEvents: "none"}}>
@@ -343,7 +361,7 @@ export default function App() {
       {/*<fog attach="fog" args={["white", 0, 40]} />*/}
       <Suspense fallback={null}>
         {/*<Model position={[-20, 0, 0]} scale={[.2, .2, .2]}/>*/}
-        <Model2 rotation={[ .2, 0, 0]} position={[0, 0, 0]} scale={[.2, .2, .2]}/>
+        <Model2 hatC={color} rotation={[ .2, 0, 0]} position={[0, 0, 0]} scale={[.2, .2, .2]}/>
       </Suspense>
       <Floor position={[0, -10, 0]} />
       {/*<Box position={[0, 0, 0]} />*/}
