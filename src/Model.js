@@ -4,7 +4,7 @@ import {useFrame} from "@react-three/fiber";
 import {l} from "./helpers"
 
 export const Model1 = (props) => {
-	const model = './baseball_cap.glb';
+	const model = '/baseball_cap.glb';
 	// const model = '/projects/cap-configurator/baseball_cap.glb';
 	
 	const { nodes, materials } = useGLTF(model)
@@ -49,7 +49,7 @@ export const Model1 = (props) => {
 
 
 export const Model2 = (props) => {
-	const model = './baseball_cap2.glb';
+	const model = '/baseball_cap2.glb';
 	// const model = '/projects/cap-configurator/baseball_cap2.glb';
 	const { nodes, materials } = useGLTF(model)
 	const modelRef = useRef()
