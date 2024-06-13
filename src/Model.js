@@ -3,7 +3,9 @@ import {useGLTF} from "@react-three/drei";
 import {useFrame} from "@react-three/fiber";
 
 export const Model = (props) => {
-	const model = '/baseball_cap.glb',
+	// const prefix = "/projects/3D/cap-configurator";
+	const prefix = "";
+	const model = prefix + '/baseball_cap.glb',
 	 { nodes, materials } = useGLTF(model),
 	 modelRef = useRef();
 	

@@ -73,7 +73,9 @@ const CameraControls = () => {
 }
 
 const CAMERA_DEFAULT_POS = [0, 10, 50],
- model = '/baseball_cap.glb';
+  // prefix = "/projects/3D/cap-configurator",
+  prefix = "",
+  model = prefix + '/baseball_cap.glb';
 
 export default function App() {
   const [colorCrown, setColorCrown] = useState("white");
