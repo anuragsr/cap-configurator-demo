@@ -20,7 +20,8 @@ body {
   left: 0;
   top: 0;
   z-index: 1;
-  background: #fff;
+  background: rgba(#fff, .7);
+  backdrop-filter: blur(2px);
   border-radius: 0 0 5px 0;
   padding: 20px;
   width: 350px;
